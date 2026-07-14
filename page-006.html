@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide 7 - Pengujian & Metrik Performa API</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clr-slate-900:#0f172a; --clr-slate-700:#334155; --clr-slate-500:#64748b;
+      --clr-slate-400:#94a3b8; --clr-slate-300:#cbd5e1; --clr-slate-200:#e2e8f0;
+      --clr-slate-100:#f1f5f9; --clr-white:#ffffff; --clr-navy:#0f2942;
+      --clr-orange:#ef6c00; --clr-amber:#f59e0b; --clr-red-accent:#ef4444;
+      --grad-panel:linear-gradient(165deg,#ff6b35 0%,#ef4444 55%,#dc2626 100%);
+      --bg-page:linear-gradient(135deg,#f8fafc 0%,#fafbfc 40%,#fef9f0 100%);
+      --font-family:'Inter',system-ui,-apple-system,sans-serif;
+      --font-mono:'JetBrains Mono','Fira Code',monospace;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html,body{width:100%;height:100%;overflow:hidden;}
+    body{font-family:var(--font-family);background:var(--bg-page);color:var(--clr-slate-700);display:flex;position:relative;user-select:none;-webkit-font-smoothing:antialiased;}
+
+    .bg-glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(110px);}
+    .bg-glow--amber{top:-6%;left:26%;width:36%;height:44%;background:radial-gradient(circle,rgba(245,158,11,0.22) 0%,rgba(239,108,0,0.05) 60%,transparent 75%);}
+    .bg-glow--faint{bottom:-14%;left:-8%;width:34%;height:40%;background:radial-gradient(circle,rgba(168,197,230,0.16) 0%,transparent 70%);}
+    .bg-grid{position:absolute;inset:0;background:linear-gradient(rgba(148,163,184,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.035) 1px,transparent 1px);background-size:46px 46px;pointer-events:none;}
+
+    /* ===== LEFT CONTENT ===== */
+    .stage{flex:1;position:relative;z-index:5;display:flex;flex-direction:column;justify-content:space-between;padding:60px 56px 54px 68px;overflow:hidden;}
+
+    /* Hero stat — upper left */
+    .hero{flex-shrink:0;}
+    .hero-figure{display:flex;align-items:baseline;gap:2px;font-weight:900;line-height:0.82;letter-spacing:-0.05em;color:var(--clr-slate-900);}
+    .hero-figure .lead{font-size:clamp(5.4rem,12vw,9.4rem);}
+    .hero-figure .suffix{font-size:clamp(2rem,4.6vw,3.6rem);font-weight:800;color:var(--clr-slate-400);letter-spacing:-0.03em;}
+    .hero-caption{margin-top:16px;max-width:560px;font-size:14px;font-weight:500;color:var(--clr-slate-500);line-height:1.5;}
+    .hero-caption strong{color:var(--clr-slate-700);font-weight:700;}
+    .hero-pass{display:inline-flex;align-items:baseline;gap:5px;margin-left:14px;padding-left:16px;border-left:2px solid var(--clr-slate-200);}
+    .hero-pass b{font-size:20px;font-weight:900;background:var(--grad-panel);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.02em;}
+    .hero-pass span{font-size:12.5px;font-weight:600;color:var(--clr-slate-500);}
+
+    /* Endpoint metrics — slim mono list */
+    .endpoints{display:flex;gap:0;margin:26px 0;flex-shrink:0;border-top:1px solid var(--clr-slate-200);border-bottom:1px solid var(--clr-slate-200);}
+    .ep{flex:1;padding:18px 22px 18px 20px;position:relative;transition:background 0.35s ease;}
+    .ep + .ep{border-left:1px solid var(--clr-slate-200);}
+    .ep:hover{background:rgba(255,255,255,0.55);}
+    .ep-time{font-size:26px;font-weight:900;color:var(--clr-orange);letter-spacing:-0.03em;line-height:1;}
+    .ep-name{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--clr-slate-700);margin-top:9px;}
+    .ep-desc{font-size:11px;font-weight:500;color:var(--clr-slate-400);line-height:1.45;margin-top:4px;}
+
+    /* Title block — lower left */
+    .title-block{flex-shrink:0;}
+    .kicker{font-size:11.5px;font-weight:700;letter-spacing:0.24em;text-transform:uppercase;color:var(--clr-orange);margin-bottom:12px;}
+    .headline{font-size:clamp(2.4rem,4.6vw,3.5rem);font-weight:900;color:var(--clr-slate-900);line-height:0.98;letter-spacing:-0.035em;text-transform:uppercase;}
+    .subhead{font-size:clamp(0.85rem,1.15vw,1.05rem);font-weight:600;color:var(--clr-slate-400);letter-spacing:0.12em;text-transform:uppercase;margin-top:12px;}
+    .body-text{margin-top:16px;max-width:600px;font-size:12.5px;font-weight:500;color:var(--clr-slate-500);line-height:1.65;}
+    .body-text strong{color:var(--clr-slate-700);font-weight:700;}
+
+    /* ===== RIGHT ORANGE PANEL ===== */
+    .panel{position:relative;width:34%;min-width:360px;height:100%;background:var(--grad-panel);flex-shrink:0;overflow:hidden;}
+    .panel::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 90%,rgba(255,255,255,0.10) 0%,transparent 55%),radial-gradient(ellipse at 85% 10%,rgba(0,0,0,0.08) 0%,transparent 55%);pointer-events:none;}
+
+    /* huge white slide number bleeding at bottom */
+    .panel-number{position:absolute;bottom:-4%;left:36px;font-size:clamp(11rem,20vw,17rem);font-weight:900;line-height:0.8;color:rgba(255,255,255,0.96);letter-spacing:-0.05em;z-index:1;}
+
+    /* vertical rounded sidebar pill on the right edge */
+    .panel-rail{position:absolute;top:36px;bottom:36px;right:30px;width:44px;border:1.5px solid rgba(255,255,255,0.55);border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:26px 0;z-index:3;transition:border-color 0.35s ease;}
+    .panel-rail:hover{border-color:rgba(255,255,255,0.9);}
+    .rail-label{writing-mode:vertical-rl;text-orientation:mixed;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.92);white-space:nowrap;}
+    .rail-label--muted{color:rgba(255,255,255,0.7);}
+
+    @media (max-width:1000px){
+      body{flex-direction:column;}
+      .stage{padding:28px 24px;gap:22px;justify-content:flex-start;}
+      .hero-figure .lead{font-size:4rem;}
+      .endpoints{flex-direction:column;}
+      .ep + .ep{border-left:none;border-top:1px solid var(--clr-slate-200);}
+      .panel{width:100%;min-width:unset;height:150px;}
+      .panel-rail{top:auto;bottom:18px;left:24px;right:auto;width:auto;height:44px;flex-direction:row;padding:0 24px;}
+      .rail-label{writing-mode:horizontal-tb;text-orientation:initial;}
+      .panel-number{font-size:6rem;bottom:auto;top:20px;left:auto;right:30px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow bg-glow--amber"></div>
+  <div class="bg-glow bg-glow--faint"></div>
+  <div class="bg-grid"></div>
+
+  <!-- ===== LEFT CONTENT ===== -->
+  <div class="stage">
+
+    <!-- Hero stat (upper-left) -->
+    <div class="hero">
+      <div class="hero-figure"><span class="lead">~347</span><span class="suffix">ms</span></div>
+      <p class="hero-caption">
+        Rata-rata <strong>Response Time API</strong> di seluruh endpoint utama
+        <span class="hero-pass"><b>82%</b><span>Test Pass Rate</span></span>
+      </p>
+    </div>
+
+    <!-- Endpoint metrics -->
+    <div class="endpoints">
+      <div class="ep">
+        <div class="ep-time">~80ms</div>
+        <div class="ep-name">Auth (Login/Register)</div>
+        <div class="ep-desc">Pembuatan Sanctum API token</div>
+      </div>
+      <div class="ep">
+        <div class="ep-time">~120ms</div>
+        <div class="ep-name">GET /customer/menu</div>
+        <div class="ep-desc">Eager Loading, cegah N+1 Query</div>
+      </div>
+      <div class="ep">
+        <div class="ep-time">~450ms</div>
+        <div class="ep-name">POST /customer/order</div>
+        <div class="ep-desc">Termasuk handshake Midtrans</div>
+      </div>
+    </div>
+
+    <!-- Title block (lower-left) -->
+    <div class="title-block">
+      <div class="kicker">PHPUnit · Response Time · Throughput</div>
+      <h1 class="headline">Pengujian &amp; Metrik</h1>
+      <p class="subhead">Kualitas &amp; Performa Backend API</p>
+      <p class="body-text">
+        <strong>118 tests · 399 assertions</strong> tereksekusi dalam <strong>~39,9s</strong>.
+        Throughput terukur <strong>~80–120 RPS</strong> pada VPS 2 vCPU / 4GB (PM2) — aman melayani hingga <strong>20 outlet</strong>.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ===== RIGHT ORANGE PANEL ===== -->
+  <div class="panel">
+    <span class="panel-number">06</span>
+    <div class="panel-rail">
+      <span class="rail-label">2026</span>
+      <span class="rail-label rail-label--muted">Informatika</span>
+      <span class="rail-label rail-label--muted">Sekeco Team</span>
+    </div>
+  </div>
+
+  <!-- slide navigation -->
+  <style>
+    .slide-next{position:fixed;right:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6b35,#dc2626);color:#fff;box-shadow:0 6px 20px rgba(220,38,38,0.35);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease;}
+    .slide-next:hover{transform:translateX(3px) scale(1.06);box-shadow:0 10px 28px rgba(220,38,38,0.45);}
+    .slide-next svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-next" href="page-007.html" title="Slide berikutnya" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){location.href='page-007.html';}});</script>
+  <!-- slide back nav -->
+  <style>
+    .slide-prev{position:fixed;left:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#334155;border:1px solid #e2e8f0;box-shadow:0 6px 20px rgba(15,41,66,0.10);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,color .25s ease;}
+    .slide-prev:hover{transform:translateX(-3px) scale(1.06);border-color:#ef6c00;color:#ef6c00;box-shadow:0 10px 28px rgba(15,41,66,0.15);}
+    .slide-prev svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-prev" href="page-005.html" title="Slide sebelumnya" aria-label="Back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){location.href='page-005.html';}});</script>
+</body>
+</html>

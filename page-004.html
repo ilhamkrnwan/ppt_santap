@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide 5 - Struktur Kode & Design Pattern</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --clr-slate-900:   #0f172a;
+      --clr-slate-700:   #334155;
+      --clr-slate-500:   #64748b;
+      --clr-slate-400:   #94a3b8;
+      --clr-slate-200:   #e2e8f0;
+      --clr-slate-100:   #f1f5f9;
+      --clr-white:       #ffffff;
+      --clr-orange:      #ef6c00;
+      --clr-orange-bg:   #ffefe6;
+      --clr-orange-light: #ff7849;
+      
+      --grad-sidebar:    linear-gradient(to bottom, #ff6b35 0%, #ef4444 60%, #dc2626 100%);
+      --bg-page:         linear-gradient(135deg, #f8fafc 0%, #fafbfc 50%, #fef9f0 100%);
+      
+      --font-family:     'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono:       'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-page);
+      color: var(--clr-slate-700);
+      display: flex;
+      position: relative;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       LEFT SIDEBAR (Solid Gradient Strip)
+       ============================================================ */
+    .sidebar {
+      position: relative;
+      width: 96px;
+      min-width: 96px;
+      height: 100%;
+      background: var(--grad-sidebar);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 0;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    /* Vertical metadata pill inside sidebar */
+    .sidebar-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
+      padding: 24px 10px;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+    }
+
+    .sidebar-pill__label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.95);
+      white-space: nowrap;
+    }
+
+    .sidebar-pill__dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+
+
+    /* ============================================================
+       MAIN CONTENT AREA
+       ============================================================ */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 56px 64px 48px 56px;
+      position: relative;
+      z-index: 10;
+      min-width: 0;
+    }
+
+    /* Giant background "04" at top left */
+    .giant-number {
+      position: absolute;
+      top: -30px;
+      left: 10px;
+      font-size: 16rem;
+      font-weight: 900;
+      line-height: 0.8;
+      color: rgba(255, 107, 53, 0.18);
+      letter-spacing: -0.05em;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ---- Upper Content Grid ---- */
+    .upper-section {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      z-index: 5;
+      margin-top: 10px;
+    }
+
+    /* 2x2 Clean Text Grid */
+    .grid-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px 28px;
+    }
+
+    .grid-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 280px;
+      position: relative;
+    }
+
+    /* Optional top/number identifier in text */
+    .grid-item__num {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--clr-slate-900);
+      margin-right: 6px;
+    }
+
+    .grid-item__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-item__icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--clr-orange-bg);
+      color: var(--clr-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .grid-item__icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .grid-item__title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--clr-slate-900);
+      letter-spacing: -0.01em;
+    }
+
+    .grid-item__desc {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--clr-slate-500);
+      line-height: 1.6;
+    }
+
+    .grid-item__desc strong {
+      font-weight: 700;
+      color: var(--clr-slate-700);
+    }
+
+    /* ================= ================= =================
+       MOCKUP TERMINAL / EDITOR
+       ================= ================= ================= */
+    .editor-mockup {
+      width: 320px;
+      background: #0f172a;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      flex-shrink: 0;
+      align-self: flex-start;
+      margin-top: 10px;
+    }
+
+    /* Terminal window controls */
+    .editor-header {
+      height: 36px;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 6px;
+      position: relative;
+    }
+
+    .editor-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .editor-dot--red { background: #ef4444; }
+    .editor-dot--yellow { background: #f59e0b; }
+    .editor-dot--green { background: #10b981; }
+
+    .editor-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--clr-slate-400);
+      margin-left: 12px;
+    }
+
+    /* Terminal tree content */
+    .editor-body {
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      color: #94a3b8;
+    }
+
+    .tree-branch {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .tree-file {
+      color: #e2e8f0;
+      padding-left: 12px;
+    }
+
+    .tree-file--active {
+      color: var(--clr-orange-light);
+      font-weight: 600;
+    }
+
+    .tree-comment {
+      color: #64748b;
+      margin-left: 8px;
+    }
+
+    /* ---- Bottom Title & Nav Section ---- */
+    .bottom-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+      font-weight: 900;
+      color: var(--clr-slate-900);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .section-subtitle {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--clr-slate-400);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-top: 12px;
+    }
+
+    /* slide navigation */
+    .slide-next{position:fixed;right:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6b35,#dc2626);color:#fff;box-shadow:0 6px 20px rgba(220,38,38,0.35);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease;}
+    .slide-next:hover{transform:translateX(3px) scale(1.06);box-shadow:0 10px 28px rgba(220,38,38,0.45);}
+    .slide-next svg{width:22px;height:22px;}
+    
+    .slide-prev{position:fixed;left:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#334155;border:1px solid #e2e8f0;box-shadow:0 6px 20px rgba(15,41,66,0.10);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,color .25s ease;}
+    .slide-prev:hover{transform:translateX(-3px) scale(1.06);border-color:#ef6c00;color:#ef6c00;box-shadow:0 10px 28px rgba(15,41,66,0.15);}
+    .slide-prev svg{width:22px;height:22px;}
+
+    /* ---- Responsive ---- */
+    @media (max-width: 1000px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%; height: 80px; flex-direction: row; padding: 12px 24px;
+      }
+      .sidebar-pill { display: none; }
+      .main-content { padding: 24px; }
+      .upper-section { flex-direction: column; gap: 24px; }
+      .editor-mockup { width: 100%; }
+      .giant-number { font-size: 10rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= LEFT SIDEBAR ================= -->
+  <div class="sidebar">
+    <!-- Metadata Pill -->
+    <div class="sidebar-pill">
+      <span class="sidebar-pill__label">2026</span>
+      <div class="sidebar-pill__dot"></div>
+      <span class="sidebar-pill__label">Informatika</span>
+      <div class="sidebar-pill__dot"></div>
+      <span class="sidebar-pill__label">Sekeco Team</span>
+    </div>
+  </div>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <div class="main-content">
+    
+    <!-- Giant backdrop "04" at top left of main-content -->
+    <div class="giant-number">04</div>
+
+    <!-- Upper grid and mockup -->
+    <div class="upper-section">
+      
+      <!-- 2x2 Grid Info -->
+      <div class="grid-container">
+        
+        <!-- MVC -->
+        <div class="grid-item">
+          <div class="grid-item__header">
+            <span class="grid-item__title">MVC Architecture</span>
+          </div>
+          <p class="grid-item__desc">
+            Pola dasar Laravel — pemisahan <strong>data, logika, dan antarmuka</strong> yang terstruktur rapi.
+          </p>
+        </div>
+
+        <!-- Service Class -->
+        <div class="grid-item">
+          <div class="grid-item__header">
+            <span class="grid-item__num">02</span>
+            <span class="grid-item__title">Service Class</span>
+          </div>
+          <p class="grid-item__desc">
+            Logika bisnis berat diisolasi di <code>app/Services/</code> — controller tetap tipis.
+          </p>
+        </div>
+
+        <!-- Custom Middleware -->
+        <div class="grid-item">
+          <div class="grid-item__header">
+            <div class="grid-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </div>
+            <span class="grid-item__title">Custom Middleware</span>
+          </div>
+          <p class="grid-item__desc">
+            <code>EnsureCustomerToken</code> memvalidasi sesi meja sebelum request masuk.
+          </p>
+        </div>
+
+        <!-- Separation of Concerns -->
+        <div class="grid-item">
+          <div class="grid-item__header">
+            <div class="grid-item__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="grid-item__title">Separation of Concerns</span>
+          </div>
+          <p class="grid-item__desc">
+            Setiap lapisan punya satu tanggung jawab — mudah diuji & dirawat.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Right Mockup Terminal Card -->
+      <div class="editor-mockup">
+        <div class="editor-header">
+          <div class="editor-dot editor-dot--red"></div>
+          <div class="editor-dot editor-dot--yellow"></div>
+          <div class="editor-dot editor-dot--green"></div>
+          <span class="editor-title">backend/</span>
+        </div>
+        <div class="editor-body">
+          <span class="tree-branch">app/</span><br>
+          │  ├── <span class="tree-branch">Http/Controllers/</span> <span class="tree-comment">→ req/res</span><br>
+          │  ├── <span class="tree-branch">Services/</span> <span class="tree-comment">→ bisnis</span><br>
+          │  │    ├── <span class="tree-file tree-file--active">OrderLifecycleService</span><br>
+          │  │    ├── <span class="tree-file tree-file--active">OrderQrisPaymentService</span><br>
+          │  │    └── <span class="tree-file tree-file--active">QrisService</span><br>
+          │  ├── <span class="tree-branch">Http/Middleware/</span><br>
+          │  │    └── <span class="tree-file tree-file--active">EnsureCustomerToken</span><br>
+          │  ├── <span class="tree-branch">Models/</span> <span class="tree-comment">→ Eloquent</span><br>
+          <span class="tree-file tree-file--active">routes/api.php</span> <span class="tree-comment">→ REST</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Title & Navigation -->
+    <div class="bottom-section">
+      <div class="title-block">
+        <h1 class="section-title">Struktur Kode</h1>
+        <p class="section-subtitle">Service Pattern · Separation of Concerns</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- slide navigation -->
+  <a class="slide-next" href="page-005.html" title="Slide berikutnya" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){location.href='page-005.html';}});</script>
+  
+  <!-- slide back nav -->
+  <a class="slide-prev" href="page-003.html" title="Slide sebelumnya" aria-label="Back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){location.href='page-003.html';}});</script>
+</body>
+</html>

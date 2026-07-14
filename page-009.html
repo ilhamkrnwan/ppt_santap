@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide 10 - Kesimpulan & Rencana Lanjutan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --clr-navy:#0f2942; --clr-orange:#ef6c00; --clr-amber:#f59e0b; --clr-red:#ef4444;
+      --clr-slate-900:#0f172a; --clr-slate-700:#334155; --clr-slate-600:#475569;
+      --clr-slate-500:#64748b; --clr-slate-400:#94a3b8; --clr-slate-300:#cbd5e1;
+      --clr-slate-200:#e2e8f0; --clr-slate-100:#f1f5f9; --clr-white:#ffffff;
+      --grad-block:linear-gradient(165deg,#ff6b35 0%,#ef4444 50%,#dc2626 100%);
+      --bg-page:linear-gradient(135deg,#f8fafc 0%,#fafbfc 40%,#fef9f0 100%);
+      --font-family:'Inter',system-ui,-apple-system,sans-serif;
+      --font-mono:'JetBrains Mono','Fira Code',monospace;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html,body{width:100%;height:100%;overflow:hidden;}
+    body{font-family:var(--font-family);background:var(--bg-page);color:var(--clr-slate-700);
+      position:relative;user-select:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+
+    /* background glows */
+    .bg-glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(110px);}
+    .bg-glow--tr{top:-10%;right:6%;width:26%;height:32%;background:radial-gradient(circle,rgba(168,230,200,0.14) 0%,transparent 70%);}
+    .bg-glow--br{bottom:-16%;right:-6%;width:40%;height:44%;background:radial-gradient(circle,rgba(245,158,11,0.16) 0%,transparent 70%);}
+    .bg-grid{position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(rgba(148,163,184,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.035) 1px,transparent 1px);
+      background-size:46px 46px;}
+
+    .slide{position:absolute;inset:0;}
+
+    /* ===== TOP-LEFT ORANGE BLOCK with huge 09 ===== */
+    .num-block{position:absolute;top:0;left:0;width:452px;height:300px;background:var(--grad-block);
+      overflow:hidden;box-shadow:0 24px 60px rgba(220,38,38,0.20);}
+    .num-block::after{content:'';position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(ellipse at 28% 88%,rgba(255,255,255,0.10) 0%,transparent 55%),radial-gradient(ellipse at 82% 12%,rgba(0,0,0,0.08) 0%,transparent 50%);}
+    .num-block__digits{position:absolute;left:-26px;bottom:-30px;font-size:19rem;font-weight:900;line-height:0.8;
+      color:var(--clr-white);letter-spacing:-0.05em;z-index:2;text-shadow:0 8px 30px rgba(0,0,0,0.12);}
+
+    /* ===== TITLE below block (lower-left) ===== */
+    .title-zone{position:absolute;left:64px;top:342px;max-width:430px;z-index:6;}
+    .title-zone h1{font-size:3.5rem;font-weight:900;color:var(--clr-slate-900);line-height:0.98;letter-spacing:-0.03em;text-transform:uppercase;}
+    .title-zone .subtitle{margin-top:16px;font-size:0.9rem;font-weight:700;color:var(--clr-slate-500);letter-spacing:0.22em;text-transform:uppercase;}
+    .title-zone .accent{margin-top:22px;width:180px;height:5px;border-radius:999px;
+      background:linear-gradient(90deg,var(--clr-red) 0%,var(--clr-orange) 55%,var(--clr-amber) 100%);box-shadow:0 2px 12px rgba(239,68,68,0.16);}
+
+    /* ===== TOP-RIGHT pill info-bar ===== */
+    .info-pill{position:absolute;top:44px;right:56px;z-index:8;display:flex;align-items:center;
+      background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border:1px solid rgba(79,70,229,0.14);border-radius:999px;padding:11px 8px;box-shadow:0 1px 3px rgba(15,41,66,0.06);
+      transition:box-shadow .35s ease,border-color .35s ease;}
+    .info-pill:hover{box-shadow:0 6px 18px rgba(15,41,66,0.10);border-color:rgba(239,108,0,0.28);}
+    .info-pill span{font-size:12.5px;font-weight:600;color:var(--clr-slate-500);padding:0 18px;letter-spacing:0.02em;}
+    .info-pill span.active{color:var(--clr-orange);font-weight:700;}
+    .info-pill .div{width:1px;height:15px;background:var(--clr-slate-200);}
+
+    /* ===== RIGHT CONTENT ===== */
+    .content{position:absolute;top:112px;right:56px;width:610px;z-index:6;display:flex;flex-direction:column;gap:30px;}
+
+    .grp-label{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--clr-orange);
+      margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+    .grp-label::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,rgba(239,108,0,0.25),transparent);}
+
+    /* Kesimpulan check items */
+    .checks{display:flex;flex-direction:column;gap:14px;}
+    .check{display:flex;align-items:flex-start;gap:13px;transition:transform .35s ease;}
+    .check:hover{transform:translateX(4px);}
+    .check__ic{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;transition:transform .3s ease;}
+    .check:hover .check__ic{transform:scale(1.1);}
+    .check__ic svg{width:15px;height:15px;}
+    .check__tx{font-size:13.5px;font-weight:500;color:var(--clr-slate-600);line-height:1.55;padding-top:3px;}
+    .check__tx strong{font-weight:700;color:var(--clr-slate-900);}
+    code{font-family:var(--font-mono);font-size:0.9em;color:var(--clr-slate-700);background:var(--clr-slate-100);padding:1px 6px;border-radius:5px;}
+    .grade{display:inline-block;font-weight:800;font-size:12.5px;padding:1px 9px;border-radius:7px;color:var(--clr-white);
+      background:linear-gradient(135deg,#ff6b35 0%,#ef4444 60%,#dc2626 100%);box-shadow:0 2px 8px rgba(220,38,38,0.28);}
+
+    /* Roadmap cards side by side */
+    .roadmap{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .road{padding:18px 20px;border-radius:15px;border:1.5px solid var(--clr-slate-200);
+      background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      transition:border-color .35s ease,box-shadow .35s ease,transform .35s ease;}
+    .road:hover{border-color:var(--clr-orange);box-shadow:0 8px 24px rgba(239,108,0,0.10);transform:translateY(-2px);}
+    .road__head{display:flex;align-items:center;gap:11px;margin-bottom:10px;}
+    .road__ic{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;transition:transform .3s ease;}
+    .road:hover .road__ic{transform:scale(1.1);}
+    .road__ic svg{width:17px;height:17px;}
+    .road__title{font-size:13.5px;font-weight:800;color:var(--clr-slate-900);line-height:1.2;}
+    .road__desc{font-size:12px;font-weight:500;color:var(--clr-slate-500);line-height:1.55;}
+    .road__desc strong{font-weight:700;color:var(--clr-slate-700);}
+
+    @media (max-width:1000px){
+      .num-block{width:60%;height:180px;}
+      .num-block__digits{font-size:10rem;left:-10px;bottom:-16px;}
+      .title-zone{position:static;max-width:100%;padding:24px;top:auto;left:auto;}
+      .title-zone h1{font-size:2.2rem;}
+      .info-pill{position:static;margin:16px 24px;width:fit-content;}
+      .content{position:static;width:auto;padding:0 24px 24px;}
+      .roadmap{grid-template-columns:1fr;}
+      html,body{overflow:auto;}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow bg-glow--tr"></div>
+  <div class="bg-glow bg-glow--br"></div>
+  <div class="bg-grid"></div>
+
+  <div class="slide">
+
+    <!-- Top-left orange block with huge 09 -->
+    <div class="num-block"><span class="num-block__digits">09</span></div>
+
+    <!-- Title below the block -->
+    <div class="title-zone">
+      <h1>Kesimpulan<br>&amp; Rencana</h1>
+      <p class="subtitle">Conclusion &middot; Future Roadmap</p>
+      <div class="accent"></div>
+    </div>
+
+    <!-- Top-right pill info bar -->
+    <div class="info-pill">
+      <span>Sekeco Team</span>
+      <div class="div"></div>
+      <span>Informatika</span>
+      <div class="div"></div>
+      <span class="active">2026</span>
+    </div>
+
+    <!-- Right content -->
+    <div class="content">
+
+      <!-- Kesimpulan -->
+      <div>
+        <div class="grp-label">Kesimpulan</div>
+        <div class="checks">
+          <div class="check">
+            <div class="check__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="check__tx">Backend <strong>REST API</strong> &amp; Website Customer berhasil di-deploy fungsional.</div>
+          </div>
+          <div class="check">
+            <div class="check__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="check__tx">Real-time (<strong>Laravel Reverb</strong>) &amp; pembayaran <strong>QRIS Webhook</strong> stabil di produksi.</div>
+          </div>
+          <div class="check">
+            <div class="check__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="check__tx">Laporan &amp; revisi tuntas &mdash; nilai akhir <span class="grade">92 (A)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rencana Lanjutan -->
+      <div>
+        <div class="grp-label">Rencana Lanjutan</div>
+        <div class="roadmap">
+          <div class="road">
+            <div class="road__head">
+              <div class="road__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+              <span class="road__title">Load Testing</span>
+            </div>
+            <p class="road__desc">Pengujian skala besar via <strong>k6</strong> atau <strong>Apache JMeter</strong>.</p>
+          </div>
+          <div class="road">
+            <div class="road__head">
+              <div class="road__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+              <span class="road__title">Message Queue</span>
+            </div>
+            <p class="road__desc"><strong>Redis Queue</strong> untuk antrean order &amp; email, meringankan beban API.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- slide navigation -->
+  <style>
+    .slide-next{position:fixed;right:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6b35,#dc2626);color:#fff;box-shadow:0 6px 20px rgba(220,38,38,0.35);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease;}
+    .slide-next:hover{transform:translateX(3px) scale(1.06);box-shadow:0 10px 28px rgba(220,38,38,0.45);}
+    .slide-next svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-next" href="page-010.html" title="Slide berikutnya" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){location.href='page-010.html';}});</script>
+  <!-- slide back nav -->
+  <style>
+    .slide-prev{position:fixed;left:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#334155;border:1px solid #e2e8f0;box-shadow:0 6px 20px rgba(15,41,66,0.10);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,color .25s ease;}
+    .slide-prev:hover{transform:translateX(-3px) scale(1.06);border-color:#ef6c00;color:#ef6c00;box-shadow:0 10px 28px rgba(15,41,66,0.15);}
+    .slide-prev svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-prev" href="page-008.html" title="Slide sebelumnya" aria-label="Back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){location.href='page-008.html';}});</script>
+</body>
+</html>

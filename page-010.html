@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide 11 - Terima Kasih</title>
+
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS (reused from cover.html)
+       ============================================================ */
+    :root {
+      --clr-navy:        #0f2942;
+      --clr-navy-light:  #1a3a5c;
+      --clr-orange:      #ef6c00;
+      --clr-amber:       #f59e0b;
+      --clr-red-accent:  #ef4444;
+      --clr-slate-900:   #0f172a;
+      --clr-slate-700:   #334155;
+      --clr-slate-500:   #64748b;
+      --clr-slate-400:   #94a3b8;
+      --clr-slate-200:   #e2e8f0;
+      --clr-slate-100:   #f1f5f9;
+      --clr-white:       #ffffff;
+      --clr-indigo-600:  #4f46e5;
+
+      --bg-page:         linear-gradient(135deg, #f0f4f8 0%, #fafbfc 50%, #fef9f0 100%);
+      --glass-bg:        rgba(255, 255, 255, 0.45);
+      --glass-border:    rgba(255, 255, 255, 0.65);
+      --glass-bg-hover:  rgba(255, 255, 255, 0.60);
+
+      --font-family:     'Inter', system-ui, -apple-system, sans-serif;
+      --slide-padding:   clamp(32px, 4vw, 56px);
+
+      --radius-sm:       8px;
+      --radius-md:       14px;
+      --radius-lg:       20px;
+      --radius-xl:       24px;
+      --radius-full:     9999px;
+
+      --shadow-sm:       0 1px 3px rgba(15, 41, 66, 0.06);
+      --shadow-md:       0 4px 16px rgba(15, 41, 66, 0.08);
+      --shadow-lg:       0 8px 32px rgba(15, 41, 66, 0.10);
+      --shadow-glow-orange: 0 0 60px rgba(239, 108, 0, 0.12);
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-page);
+      color: var(--clr-slate-700);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: var(--slide-padding);
+      position: relative;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ============================================================
+       BACKGROUND DECORATIVE ELEMENTS (static — no keyframes)
+       ============================================================ */
+    .bg-glow {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(100px);
+    }
+
+    .bg-glow--top-left {
+      top: -18%;
+      left: -12%;
+      width: 52%;
+      height: 52%;
+      background: radial-gradient(circle, rgba(239, 108, 0, 0.18) 0%, rgba(245, 158, 11, 0.10) 60%, transparent 100%);
+    }
+
+    .bg-glow--bottom-right {
+      bottom: -18%;
+      right: -12%;
+      width: 55%;
+      height: 55%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(239, 108, 0, 0.06) 60%, transparent 100%);
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    .corner-accent {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 220px;
+      height: 220px;
+      background: linear-gradient(225deg, rgba(239, 108, 0, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       HEADER (reused from cover.html)
+       ============================================================ */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 10px 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-sm);
+      transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+
+    .logo-cluster:hover {
+      background: var(--glass-bg-hover);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(239, 108, 0, 0.20);
+    }
+
+    .logo-item {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--clr-white);
+      border: 1px solid var(--clr-slate-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .logo-item:hover {
+      transform: scale(1.08);
+      box-shadow: var(--shadow-md);
+    }
+
+    .logo-item img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+    }
+
+    .logo-item--unu img {
+      width: 42px;
+      height: 42px;
+    }
+
+    .info-pill {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(79, 70, 229, 0.15);
+      border-radius: var(--radius-full);
+      padding: 10px 6px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+
+    .info-pill:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(79, 70, 229, 0.30);
+    }
+
+    .info-pill__item {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--clr-slate-500);
+      padding: 0 18px;
+      letter-spacing: 0.01em;
+      transition: color 0.3s ease;
+    }
+
+    .info-pill__item:hover {
+      color: var(--clr-indigo-600);
+    }
+
+    .info-pill__item--active {
+      color: var(--clr-indigo-600);
+      font-weight: 700;
+    }
+
+    .info-pill__divider {
+      width: 1px;
+      height: 16px;
+      background: var(--clr-slate-200);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       MAIN CONTENT — centered closing hero
+       ============================================================ */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
+
+    .thanks-title {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 900;
+      color: var(--clr-navy);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .accent-line {
+      width: 220px;
+      height: 5px;
+      background: linear-gradient(90deg, var(--clr-red-accent) 0%, var(--clr-orange) 50%, var(--clr-amber) 100%);
+      border-radius: var(--radius-full);
+      margin-top: 26px;
+      box-shadow: 0 2px 12px rgba(239, 68, 68, 0.12);
+    }
+
+    .role-label {
+      font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+      font-weight: 700;
+      color: var(--clr-slate-500);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-top: 26px;
+    }
+
+    /* Details card (reused, single-row inline layout) */
+    .details-card {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 26px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 20px 34px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+    }
+
+    .details-card:hover {
+      border-color: rgba(239, 108, 0, 0.25);
+      box-shadow: var(--shadow-md), var(--shadow-glow-orange);
+      background: var(--glass-bg-hover);
+    }
+
+    .details-card__pair {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 7px;
+    }
+
+    .details-card__label {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--clr-slate-400);
+    }
+
+    .details-card__value {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--clr-slate-700);
+    }
+
+    .details-card__sep {
+      width: 1px;
+      height: 15px;
+      background: var(--clr-slate-200);
+    }
+
+    /* Links badge container */
+    .links-group {
+      margin-top: 26px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .link-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid var(--clr-slate-200);
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--clr-slate-500);
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+
+    .link-badge:hover {
+      background: var(--clr-white);
+      border-color: var(--clr-orange);
+      color: var(--clr-orange);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .link-badge svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 2.2;
+    }
+
+    /* ============================================================
+       FOOTER (reused from cover.html)
+       ============================================================ */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid rgba(226, 232, 240, 0.5);
+      padding-top: 22px;
+    }
+
+    .footer-entity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--clr-slate-500);
+      transition: color 0.3s ease;
+    }
+
+    .footer-entity:hover {
+      color: var(--clr-navy);
+    }
+
+    .footer-entity__logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--clr-white);
+      border: 1px solid var(--clr-slate-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+    }
+
+    .footer-entity:hover .footer-entity__logo {
+      transform: scale(1.08);
+    }
+
+    .footer-entity__logo img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    .footer-entity__logo--unu img {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* ============================================================
+       RESPONSIVE ADJUSTMENTS
+       ============================================================ */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .details-card {
+        flex-direction: column;
+      }
+
+      .details-card__sep {
+        display: none;
+      }
+
+      .footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= BACKGROUND DECORATIVE ================= -->
+  <div class="bg-glow bg-glow--top-left"></div>
+  <div class="bg-glow bg-glow--bottom-right"></div>
+  <div class="bg-grid"></div>
+  <div class="corner-accent"></div>
+
+
+  <!-- ================= HEADER SECTION ================= -->
+  <div class="header">
+    <!-- Logos (Top Left) -->
+    <div class="logo-cluster">
+      <div class="logo-item" title="PT Sarwa Kalyana Cara (Sekeco)">
+        <img src="assets/sekeco.avif" alt="Logo Sekeco">
+      </div>
+      <div class="logo-item" title="POS Santap">
+        <img src="assets/santap.png" alt="Logo Santap">
+      </div>
+      <div class="logo-item logo-item--unu" title="Universitas Nahdlatul Ulama Yogyakarta">
+        <img src="assets/unu-jogja.avif" alt="Logo UNUY">
+      </div>
+    </div>
+
+    <!-- Pill Info Badge (Top Right) -->
+    <div class="info-pill">
+      <span class="info-pill__item">Sekeco Team</span>
+      <div class="info-pill__divider"></div>
+      <span class="info-pill__item">Informatika</span>
+      <div class="info-pill__divider"></div>
+      <span class="info-pill__item info-pill__item--active">2026</span>
+    </div>
+  </div>
+
+
+  <!-- ================= CLOSING HERO SECTION ================= -->
+  <div class="main-content">
+    <h1 class="thanks-title">Terima Kasih</h1>
+
+    <div class="accent-line"></div>
+
+    <h3 class="role-label">Sesi Tanya Jawab &amp; Diskusi</h3>
+
+    <!-- Details Card -->
+    <div class="details-card">
+      <span class="details-card__pair">
+        <span class="details-card__label">Nama</span>
+        <span class="details-card__value">Ilham Kurniawan</span>
+      </span>
+      <span class="details-card__sep"></span>
+      <span class="details-card__pair">
+        <span class="details-card__label">NIM</span>
+        <span class="details-card__value">231111016</span>
+      </span>
+      <span class="details-card__sep"></span>
+      <span class="details-card__pair">
+        <span class="details-card__label">Peran</span>
+        <span class="details-card__value">Fullstack Developer</span>
+      </span>
+      <span class="details-card__sep"></span>
+      <span class="details-card__pair">
+        <span class="details-card__label">Proyek</span>
+        <span class="details-card__value">POS Santap</span>
+      </span>
+    </div>
+
+    <!-- Links Badges Group -->
+    <div class="links-group">
+      <!-- Website Customer -->
+      <a href="https://santap.app" target="_blank" class="link-badge" title="Buka Website Customer Santap">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span>santap.app</span>
+      </a>
+
+      <!-- Backend API Documentation -->
+      <a href="https://api.santap.app/docs/api" target="_blank" class="link-badge" title="Buka Dokumentasi Backend API Santap">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v4a1 1 0 0 0 1 1h4M5 9h14M5 13h14M5 17h14"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/>
+        </svg>
+        <span>api.santap.app</span>
+      </a>
+
+      <!-- GitHub Repositories -->
+      <a href="https://github.com/santapapp" target="_blank" class="link-badge" title="Buka Repositori GitHub POS Santap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke-width="2" d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+        </svg>
+        <span>github.com/santapapp</span>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ================= FOOTER SECTION ================= -->
+  <div class="footer">
+    <div class="footer-entity">
+      <div class="footer-entity__logo footer-entity__logo--unu">
+        <img src="assets/unu-jogja.avif" alt="Logo UNUY">
+      </div>
+      <span>Universitas Nahdlatul Ulama Yogyakarta</span>
+    </div>
+
+    <div class="footer-entity">
+      <div class="footer-entity__logo">
+        <img src="assets/sekeco.avif" alt="Logo Sekeco">
+      </div>
+      <span>PT. Sarwa Kalyana Cara</span>
+    </div>
+  </div>
+
+  <!-- slide navigation -->
+  <style>
+    .slide-next{position:fixed;right:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6b35,#dc2626);color:#fff;box-shadow:0 6px 20px rgba(220,38,38,0.35);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease;}
+    .slide-next:hover{transform:translateX(3px) scale(1.06);box-shadow:0 10px 28px rgba(220,38,38,0.45);}
+    .slide-next svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-next" href="cover.html" title="Slide berikutnya" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){location.href='cover.html';}});</script>
+  <!-- slide back nav -->
+  <style>
+    .slide-prev{position:fixed;left:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#334155;border:1px solid #e2e8f0;box-shadow:0 6px 20px rgba(15,41,66,0.10);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,color .25s ease;}
+    .slide-prev:hover{transform:translateX(-3px) scale(1.06);border-color:#ef6c00;color:#ef6c00;box-shadow:0 10px 28px rgba(15,41,66,0.15);}
+    .slide-prev svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-prev" href="page-009.html" title="Slide sebelumnya" aria-label="Back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){location.href='page-009.html';}});</script>
+</body>
+</html>

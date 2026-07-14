@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide 6 - Alur Fitur Kritis & Sinkronisasi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --clr-slate-900:#0f172a; --clr-slate-700:#334155; --clr-slate-500:#64748b;
+      --clr-slate-400:#94a3b8; --clr-slate-300:#cbd5e1; --clr-slate-200:#e2e8f0;
+      --clr-slate-100:#f1f5f9; --clr-white:#ffffff; --clr-navy:#0f2942;
+      --clr-orange:#ef6c00; --clr-amber:#f59e0b; --clr-red-accent:#ef4444;
+      --grad-panel:linear-gradient(165deg,#ff6b35 0%,#ef4444 52%,#dc2626 100%);
+      --bg-page:linear-gradient(135deg,#f8fafc 0%,#fafbfc 40%,#fef9f0 100%);
+      --font-family:'Inter',system-ui,-apple-system,sans-serif;
+      --font-mono:'JetBrains Mono','Fira Code',monospace;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html,body{width:100%;height:100%;overflow:hidden;}
+    body{font-family:var(--font-family);background:var(--bg-page);color:var(--clr-slate-700);position:relative;user-select:none;-webkit-font-smoothing:antialiased;}
+
+    /* background glows */
+    .bg-glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(110px);}
+    .bg-glow--tl{top:-14%;left:-8%;width:34%;height:34%;background:radial-gradient(circle,rgba(245,158,11,0.12) 0%,transparent 70%);}
+    .bg-glow--br{bottom:-18%;right:-4%;width:42%;height:42%;background:radial-gradient(circle,rgba(239,108,0,0.10) 0%,transparent 70%);}
+    .bg-grid{position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(rgba(148,163,184,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.035) 1px,transparent 1px);
+      background-size:46px 46px;}
+
+    /* ===== ORANGE PANEL — bottom-right, angled top-left edge ===== */
+    .panel{
+      position:absolute;bottom:0;right:0;width:560px;height:340px;
+      background:var(--grad-panel);
+      clip-path:polygon(22% 0,100% 0,100% 100%,0 100%);
+      box-shadow:-18px -18px 60px rgba(220,38,38,0.16);
+      overflow:hidden;z-index:2;
+    }
+    .panel::after{content:'';position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(ellipse at 78% 12%,rgba(255,255,255,0.10) 0%,transparent 55%),radial-gradient(ellipse at 20% 90%,rgba(0,0,0,0.08) 0%,transparent 55%);}
+    .panel__num{
+      position:absolute;right:22px;bottom:-42px;
+      font-size:19rem;font-weight:900;line-height:0.8;letter-spacing:-0.04em;
+      color:rgba(255,255,255,0.96);z-index:2;
+    }
+    /* thin pill info-bar inside panel */
+    .panel__pill{
+      position:absolute;top:40px;left:120px;right:34px;z-index:3;
+      display:flex;align-items:center;gap:0;
+      background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.30);
+      border-radius:9999px;padding:11px 8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      transition:border-color 0.35s ease,background 0.35s ease;
+    }
+    .panel__pill:hover{background:rgba(255,255,255,0.20);border-color:rgba(255,255,255,0.5);}
+    .panel__pill span{font-size:12px;font-weight:700;color:rgba(255,255,255,0.95);padding:0 16px;letter-spacing:0.03em;white-space:nowrap;}
+    .panel__pill i{width:1px;height:14px;background:rgba(255,255,255,0.4);flex-shrink:0;font-style:normal;}
+
+    /* ===== CONTENT (upper-left title, mid-left body) ===== */
+    .stage{position:relative;z-index:5;height:100%;display:flex;flex-direction:column;padding:52px 60px 48px 60px;}
+
+    .head{margin-bottom:26px;}
+    .title{font-size:clamp(2.6rem,5vw,3.9rem);font-weight:900;color:var(--clr-slate-900);line-height:0.98;letter-spacing:-0.035em;text-transform:uppercase;}
+    .subtitle{font-size:0.86rem;font-weight:600;color:var(--clr-slate-400);letter-spacing:0.22em;text-transform:uppercase;margin-top:12px;}
+
+    .flows{display:flex;flex-direction:column;gap:20px;max-width:760px;}
+
+    .flow-row{display:flex;align-items:center;gap:16px;}
+    .flow-badge{
+      display:flex;align-items:center;flex-shrink:0;
+      font-size:10px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--clr-orange);
+      background:rgba(255,255,255,0.6);border:1px solid var(--clr-slate-200);border-left:3px solid var(--clr-orange);
+      border-radius:8px;padding:0 12px;min-width:78px;height:48px;line-height:1.2;
+      transition:box-shadow 0.3s ease;
+    }
+    .flow-row:hover .flow-badge{box-shadow:0 4px 16px rgba(15,41,66,0.06);}
+
+    .flow-seq{display:flex;align-items:center;flex:1;}
+    .node{
+      display:flex;align-items:center;gap:8px;flex:1;
+      background:rgba(255,255,255,0.55);border:1px solid var(--clr-slate-200);border-radius:11px;
+      padding:9px 11px;min-height:48px;
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      transition:border-color 0.3s ease,box-shadow 0.3s ease;
+    }
+    .node:hover{border-color:var(--clr-orange);box-shadow:0 4px 16px rgba(15,41,66,0.06);}
+    .node__ico{width:26px;height:26px;flex-shrink:0;border-radius:7px;display:flex;align-items:center;justify-content:center;
+      background:rgba(239,108,0,0.10);color:var(--clr-orange);transition:background 0.3s ease,color 0.3s ease;}
+    .node:hover .node__ico{background:var(--clr-orange);color:var(--clr-white);}
+    .node__ico svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    .node__lbl{font-size:10.8px;font-weight:600;color:var(--clr-slate-700);line-height:1.3;}
+    .node__lbl code{font-family:var(--font-mono);font-size:9.8px;font-weight:600;color:var(--clr-orange);letter-spacing:-0.01em;}
+
+    .arrow{flex-shrink:0;align-self:center;width:18px;height:1.5px;position:relative;margin:0 2px;background:var(--clr-slate-300);transition:background 0.3s ease;}
+    .arrow::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+      border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid var(--clr-slate-300);transition:border-left-color 0.3s ease;}
+    .flow-seq:hover .arrow{background:var(--clr-orange);}
+    .flow-seq:hover .arrow::after{border-left-color:var(--clr-orange);}
+
+    /* slim DB note */
+    .db-strip{
+      display:flex;align-items:center;gap:13px;margin-top:20px;max-width:620px;
+      background:rgba(255,255,255,0.55);border:1px solid var(--clr-slate-200);border-left:3px solid var(--clr-orange);
+      border-radius:11px;padding:12px 18px;
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      transition:border-color 0.3s ease,box-shadow 0.3s ease;
+    }
+    .db-strip:hover{border-color:var(--clr-orange);box-shadow:0 4px 16px rgba(15,41,66,0.06);}
+    .db-strip__ico{width:32px;height:32px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(239,108,0,0.10);color:var(--clr-orange);}
+    .db-strip__ico svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    .db-strip__txt{font-size:11.8px;font-weight:500;color:var(--clr-slate-500);line-height:1.55;}
+    .db-strip__txt code{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--clr-orange);}
+    .db-strip__txt strong{font-weight:700;color:var(--clr-slate-700);}
+
+    @media (max-width:1000px){
+      .panel{width:100%;height:180px;clip-path:none;}
+      .panel__num{font-size:8rem;bottom:-18px;right:20px;}
+      .panel__pill{left:24px;right:24px;top:20px;flex-wrap:wrap;}
+      .stage{padding:24px 20px 200px;}
+      .title{font-size:2rem;}
+      .flows{max-width:100%;}
+      .flow-row{flex-direction:column;align-items:stretch;gap:8px;}
+      .flow-badge{min-width:unset;height:auto;padding:6px 12px;align-self:flex-start;}
+      .flow-seq{flex-direction:column;align-items:stretch;}
+      .arrow{display:none;}
+      .db-strip{max-width:100%;}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow bg-glow--tl"></div>
+  <div class="bg-glow bg-glow--br"></div>
+  <div class="bg-grid"></div>
+
+  <!-- ORANGE PANEL bottom-right -->
+  <div class="panel">
+    <div class="panel__pill">
+      <span>Sekeco Team</span><i></i>
+      <span>Informatika</span><i></i>
+      <span>2026</span>
+    </div>
+    <span class="panel__num">05</span>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="stage">
+    <div class="head">
+      <h1 class="title">Alur Fitur<br>Kritis</h1>
+      <p class="subtitle">Open Bill · QRIS Webhook</p>
+    </div>
+
+    <div class="flows">
+      <!-- FLOW 1 — OPEN BILL -->
+      <div class="flow-row">
+        <div class="flow-badge">Open<br>Bill</div>
+        <div class="flow-seq">
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg></span>
+            <span class="node__lbl">Kasir buka sesi meja</span>
+          </div>
+          <div class="arrow"></div>
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><path d="M20 8v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><path d="M8 8h5M8 12h8M8 16h6"/></svg></span>
+            <span class="node__lbl">Pesan bertahap</span>
+          </div>
+          <div class="arrow"></div>
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
+            <span class="node__lbl">Event <code>OpenBillRepeatOrderCreated</code></span>
+          </div>
+          <div class="arrow"></div>
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></span>
+            <span class="node__lbl">Tagihan diakumulasi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLOW 2 — QRIS WEBHOOK -->
+      <div class="flow-row">
+        <div class="flow-badge">QRIS<br>Webhook</div>
+        <div class="flow-seq">
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M20 20v.01M20 14v.01M14 20v.01"/></svg></span>
+            <span class="node__lbl">Backend buat QRIS</span>
+          </div>
+          <div class="arrow"></div>
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8"/></svg></span>
+            <span class="node__lbl">Pelanggan bayar</span>
+          </div>
+          <div class="arrow"></div>
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></span>
+            <span class="node__lbl">Webhook: <code>payment_status = paid</code></span>
+          </div>
+          <div class="arrow"></div>
+          <div class="node">
+            <span class="node__ico"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3M6 8l4 3 4-4"/></svg></span>
+            <span class="node__lbl">Bill ditutup, kasir realtime</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DB TRANSACTION NOTE -->
+    <div class="db-strip">
+      <span class="db-strip__ico"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+      <p class="db-strip__txt">
+        <code>DB::transaction</code> menjaga <strong>idempotensi &amp; konsistensi</strong> data finansial — jika gagal di tengah proses, seluruh perubahan <strong>rollback otomatis</strong>.
+      </p>
+    </div>
+  </div>
+
+  <!-- slide navigation -->
+  <style>
+    .slide-next{position:fixed;right:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff6b35,#dc2626);color:#fff;box-shadow:0 6px 20px rgba(220,38,38,0.35);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease;}
+    .slide-next:hover{transform:translateX(3px) scale(1.06);box-shadow:0 10px 28px rgba(220,38,38,0.45);}
+    .slide-next svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-next" href="page-006.html" title="Slide berikutnya" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){location.href='page-006.html';}});</script>
+  <!-- slide back nav -->
+  <style>
+    .slide-prev{position:fixed;left:22px;bottom:22px;z-index:9999;width:52px;height:52px;border-radius:9999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#334155;border:1px solid #e2e8f0;box-shadow:0 6px 20px rgba(15,41,66,0.10);text-decoration:none;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,color .25s ease;}
+    .slide-prev:hover{transform:translateX(-3px) scale(1.06);border-color:#ef6c00;color:#ef6c00;box-shadow:0 10px 28px rgba(15,41,66,0.15);}
+    .slide-prev svg{width:22px;height:22px;}
+  </style>
+  <a class="slide-prev" href="page-004.html" title="Slide sebelumnya" aria-label="Back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <script>document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){location.href='page-004.html';}});</script>
+</body>
+</html>
